@@ -57,8 +57,11 @@ elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "icc")
     # Placeholder in case we want to add icc-specific flags.
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
     # Placeholder in case we want to add clang-specific flags.
+elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC" AND "${CMAKE_C_COMPILER}" MATCHES "clang-cl")
+    # clang-cl on Windows (reports as MSVC but is actually Clang-based)
+    # Accepts Clang-style flags while providing MSVC compatibility
 else()
-    message(FATAL_ERROR "gcc, icc, or clang is required for this configuration.")
+    message(FATAL_ERROR "gcc, icc, clang, or clang-cl is required for this configuration.")
 endif()
 
 # Flags specific to reference kernels.
