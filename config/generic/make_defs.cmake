@@ -57,11 +57,20 @@ elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "icc")
     # Placeholder in case we want to add icc-specific flags.
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
     # Placeholder in case we want to add clang-specific flags.
-elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC" AND "${CMAKE_C_COMPILER}" MATCHES "clang-cl")
-    # clang-cl on Windows (reports as MSVC but is actually Clang-based)
-    # Accepts Clang-style flags while providing MSVC compatibility
+elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+    # On Windows, both native MSVC (cl.exe) and clang-cl identify as MSVC to CMake
+    # BLIS requires Clang for proper architecture flags, so check for clang-cl specifically
+    if("${CMAKE_C_COMPILER}" MATCHES "[Cc][Ll][Aa][Nn][Gg]")
+        # This is clang-cl: Clang with MSVC-compatible command-line interface
+        message(STATUS "Detected clang-cl compiler (LLVM Clang with MSVC compatibility)")
+    else()
+        message(FATAL_ERROR "BLIS requires Clang-based compiler on Windows. "
+                            "Native MSVC (cl.exe) detected, but clang-cl is required. "
+                            "Please install 'C++ Clang Compiler for Windows' component in Visual Studio "
+                            "and ensure CMAKE_C_COMPILER points to clang-cl.exe")
+    endif()
 else()
-    message(FATAL_ERROR "gcc, icc, clang, or clang-cl is required for this configuration.")
+    message(FATAL_ERROR "gcc, icc, or clang is required for this configuration.")
 endif()
 
 # Flags specific to reference kernels.
